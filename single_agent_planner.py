@@ -108,8 +108,8 @@ def a_star(my_map, start_loc, goal_loc, h_values, agent, constraints):
     """
 
     ##############################
-    # Task 1.1: Extend the A* search to search in the space-time domain
-    #           rather than space domain, only.
+        # Task 1.1: Extend the A* search to search in the space-time domain
+        #           rather than space domain, only.
 
     open_list = []
     closed_list = dict()
@@ -128,10 +128,7 @@ def a_star(my_map, start_loc, goal_loc, h_values, agent, constraints):
             child_loc = move(curr['loc'], dir)
             if my_map[child_loc[0]][child_loc[1]]:
                 continue
-            child = {'loc': child_loc,
-                    'g_val': curr['g_val'] + 1,
-                    'h_val': h_values[child_loc],
-                    'parent': curr}
+            child = {'loc': child_loc, 'g_val': curr['g_val'] + 1, 'h_val': h_values[child_loc],'parent': curr}
             if (child['loc']) in closed_list:
                 existing_node = closed_list[(child['loc'])]
                 if compare_nodes(child, existing_node):
