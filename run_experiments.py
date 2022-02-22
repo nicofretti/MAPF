@@ -10,6 +10,7 @@ from single_agent_planner import get_sum_of_cost
 
 SOLVER = "CBS"
 
+
 def print_mapf_instance(my_map, starts, goals):
     print('Start locations')
     print_locations(my_map, starts)
@@ -82,7 +83,6 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-
     result_file = open("results.csv", "w", buffering=1)
 
     for file in sorted(glob.glob(args.instance)):
@@ -108,7 +108,6 @@ if __name__ == '__main__':
 
         cost = get_sum_of_cost(paths)
         result_file.write("{},{}\n".format(file, cost))
-
 
         if not args.batch:
             print("***Test paths on a simulation***")

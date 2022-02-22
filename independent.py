@@ -33,7 +33,8 @@ class IndependentSolver(object):
         # Task 0: Understand the following code (see the lab description for some hints)
 
         for i in range(self.num_of_agents):  # Find path for each agent
-            path = a_star(self.my_map, self.starts[i], self.goals[i], self.heuristics[i], i, [])
+            path = a_star(self.my_map, self.starts[i], self.goals[i], self.heuristics[i],
+                          i, [])
             if path is None:
                 raise BaseException('No solutions')
             result.append(path)

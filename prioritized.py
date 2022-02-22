@@ -31,8 +31,7 @@ class PrioritizedPlanningSolver(object):
         constraints = []
 
         for i in range(self.num_of_agents):  # Find path for each agent
-            path = a_star(self.my_map, self.starts[i], self.goals[i], self.heuristics[i],
-                          i, constraints)
+            path = a_star(self.my_map, self.starts[i], self.goals[i], self.heuristics[i], i, constraints)
             if path is None:
                 raise BaseException('No solutions')
             result.append(path)
@@ -44,8 +43,31 @@ class PrioritizedPlanningSolver(object):
             #            * self.num_of_agents has the number of total agents
             #            * constraints: array of constraints to consider for future A* searches
 
-
             ##############################
+
+            for time, loc in enumerate(path):
+                # create a new constraint whith the current path location for all agents except the current one
+                for a in range(self.num_of_agents):
+                    if a != i:
+                        # vertex constraint
+                        # if this is the last location in the path, we add a final constraint
+                        constraints.append({
+                            'agent': a,
+                            'loc': [loc],
+                            'timestep': time,
+                            'final': time == len(path) - 1
+                        })
+                        # edge constraint
+                        # the agent can't be at the last position to add an edge constraint
+                        if time < len(path) - 1:
+                            # next location in path
+                            nextloc = path[path.index(loc) + 1]
+                            constraints.append({
+                                'agent': a,
+                                'loc': [nextloc, loc],
+                                'timestep': time + 1,
+                                'final': False
+                            })
 
         self.CPU_time = timer.time() - start_time
 
