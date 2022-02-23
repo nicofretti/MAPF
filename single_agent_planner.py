@@ -54,9 +54,11 @@ def build_constraint_table(constraints, agent):
     #               is_constrained function.
     c_table = dict()
     for c in constraints:
-        print(c)
         # we need to consider only the constraints for the given agent
-        if c['agent'] == agent:
+        # 4.1 Supporting positive constraints
+        if (not 'positive' in c.keys()):
+            c['positive'] = False
+        if not c['positive'] and c['agent'] == agent:
             timestep = c['timestep']
             if timestep not in c_table:
                 c_table[timestep] = [c]
