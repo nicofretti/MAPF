@@ -24,8 +24,7 @@ def compute_heuristics(my_map, goal):
         for direction in range(4):
             child_loc = move(loc, direction)
             child_cost = cost + 1
-            if child_loc[0] < 0 or child_loc[0] >= len(my_map) \
-                    or child_loc[1] < 0 or child_loc[1] >= len(my_map[0]):
+            if child_loc[0] < 0 or child_loc[0] >= len(my_map) or child_loc[1] < 0 or child_loc[1] >= len(my_map[0]):
                 continue
             if my_map[child_loc[0]][child_loc[1]]:
                 continue
@@ -55,6 +54,7 @@ def build_constraint_table(constraints, agent):
     #               is_constrained function.
     c_table = dict()
     for c in constraints:
+        print(c)
         # we need to consider only the constraints for the given agent
         if c['agent'] == agent:
             timestep = c['timestep']

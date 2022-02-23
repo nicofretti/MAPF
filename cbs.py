@@ -118,8 +118,46 @@ def disjoint_splitting(collision):
     #                          specified timestep, and the second constraint prevents the same agent to traverse the
     #                          specified edge at the specified timestep
     #           Choose the agent randomly
+    constraints = []
+    choosen_agent = 'a'+str(random.randint(1, 2))
+    if collision['type'] == 'vertex':
+        constraints.append({
+            'agent': collision[choosen_agent],
+            'loc': collision['loc'],
+            'timestep': collision['timestep'],
+            'final': False,
+            'positive': True
+        })
+        constraints.append({
+            'agent': collision[choosen_agent],
+            'loc': collision['loc'],
+            'timestep': collision['timestep'],
+            'final': False,
+            'positive': False
+        })
+    elif collision['type'] == 'edge':
+        loc = collision['loc']
+        if choosen_agent == 'a1':
+            loc = list(reversed(loc))
 
-    pass
+        constraints.append({
+            'agent': collision[choosen_agent],
+            'loc': loc,
+            'timestep': collision['timestep'],
+            'final': False,
+            'positive': True
+        })
+        constraints.append({
+            'agent': collision[choosen_agent],
+            'loc': loc,
+            'timestep': collision['timestep'],
+            'final': False,
+            'positive': False
+        })
+    return constraints
+
+
+
 
 
 class CBSSolver(object):
