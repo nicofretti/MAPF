@@ -52,6 +52,7 @@ def detect_collisions(paths):
     #           causing the collision, and the timestep at which the collision occurred.
     #           You should use your detect_collision function to find a collision between two robots.
     collisions = []
+    # i and j are agents
     for i in range(len(paths)):
         for j in range(i + 1, len(paths)):
             coll_data = detect_collision(paths[i], paths[j])
@@ -157,9 +158,6 @@ def disjoint_splitting(collision):
     return constraints
 
 
-
-
-
 class CBSSolver(object):
     """The high-level search of CBS."""
 
@@ -254,12 +252,18 @@ class CBSSolver(object):
             else:
                 # we choose a collision and turn it into constraints
                 collision = random.choice(p['collisions'])
-                constraints = standard_splitting(collision)
+                # 4.2 Adjusting the High-Level Search
+                if disjoint:
+                    constraints = disjoint_splitting(collision)
+                else:
+                    constraints = standard_splitting(collision)
+                # HERE
                 for c in constraints:
                     q = {'cost': 0,
                          'constraints': [*p['constraints'], c],  # all constraints in p plus c
                          'paths': p['paths'].copy(),
-                         'collisions': []}
+                         'collisions': []
+                         }
                     agent = c['agent']
                     path = a_star(self.my_map, self.starts[agent], self.goals[agent], self.heuristics[agent],
                                   agent, q['constraints'])
