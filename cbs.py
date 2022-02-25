@@ -3,7 +3,7 @@ import time as timer
 import heapq
 from single_agent_planner import compute_heuristics, a_star, get_location, get_sum_of_cost
 
-DEBUG = False
+DEBUG = True
 
 
 def normalize_paths(pathA, pathB):
@@ -157,6 +157,25 @@ def disjoint_splitting(collision):
         })
     return constraints
 
+def paths_violate_constraint(constraint, paths):
+    ##############################
+    # Task 4.3: compute the list of agents that violates the positive constraints
+    # constraint:{'agent': 0, 'loc': [(2, 4)], 'timestep': 3, 'final': False, 'positive': False}
+    # paths:[[(2, 1), ... (3, 4), (3, 5)], [(1, 2), ..., (4, 4)]]
+
+    agents_violate = []
+    for agent in range(len(paths)):
+        if agent != constraint['agent']:
+            if len(constraint['loc'])==1:
+                # vertex constraint
+                if constraint['loc'][0] == get_location(paths[agent],constraint['timestep']):
+                    agents_violate.append(agent)
+            else:
+                # edge constraint
+                loc = [get_location(paths[agent],constraint['timestep']),get_location(paths[agent],constraint['timestep']+1)]
+                if loc == constraint['loc']:
+                    agents_violate.append(agent)
+    return agents_violate
 
 class CBSSolver(object):
     """The high-level search of CBS."""
@@ -210,10 +229,12 @@ class CBSSolver(object):
         # paths         - list of paths, one for each agent
         #               [[(x11, y11), (x12, y12), ...], [(x21, y21), (x22, y22), ...], ...]
         # collisions     - list of collisions in paths
-        root = {'cost': 0,
-                'constraints': [],
-                'paths': [],
-                'collisions': []}
+        root = {
+            'cost': 0,
+            'constraints': [],
+            'paths': [],
+            'collisions': []
+        }
         for i in range(self.num_of_agents):  # Find initial path for each agent
             path = a_star(self.my_map, self.starts[i], self.goals[i], self.heuristics[i],
                           i, root['constraints'])
@@ -224,7 +245,6 @@ class CBSSolver(object):
         root['cost'] = get_sum_of_cost(root['paths'])
         root['collisions'] = detect_collisions(root['paths'])
         self.push_node(root)
-
         # Task 3.1: Testing
         if DEBUG:
             print(root['collisions'])
@@ -259,6 +279,7 @@ class CBSSolver(object):
                     constraints = standard_splitting(collision)
                 # HERE
                 for c in constraints:
+                    skip_node = False
                     q = {'cost': 0,
                          'constraints': [*p['constraints'], c],  # all constraints in p plus c
                          'paths': p['paths'].copy(),
@@ -270,9 +291,22 @@ class CBSSolver(object):
                     # if path not empty
                     if path:
                         q['paths'][agent] = path
+                        if c['positive']:
+                            rebuild_agents = paths_violate_constraint(c, q['paths'])
+                            for r_agent in rebuild_agents:
+                                c_new = c.copy()
+                                c_new['agent'] = r_agent
+                                c_new['positive'] = False
+                                q['constraints'].append(c_new)
+                                r_path = a_star(self.my_map, self.starts[r_agent], self.goals[r_agent],
+                                                self.heuristics[r_agent], r_agent, q['constraints'])
+                                if r_path is None:
+                                    skip_node = True
+                                    break # at least one agents has none solution
                         q['collisions'] = detect_collisions(q['paths'])
                         q['cost'] = get_sum_of_cost(q['paths'])
-                        self.push_node(q)
+                        if(not skip_node):
+                            self.push_node(q)
                     else:
                         raise BaseException('No solutions')
 
