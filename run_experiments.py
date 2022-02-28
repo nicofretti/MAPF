@@ -91,7 +91,7 @@ if __name__ == '__main__':
     files = ["random.generated"] if args.random else glob.glob(args.instance)
     for file in files:
         print("***Import an instance***")
-        my_map, starts, goals = random_map(5, 5, 5, .4) if args.random else import_mapf_instance(file)
+        my_map, starts, goals = random_map(10, 10, 15, .2) if args.random else import_mapf_instance(file)
         print_mapf_instance(my_map, starts, goals)
 
         if args.solver == "CBS":
