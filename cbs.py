@@ -120,38 +120,45 @@ def disjoint_splitting(collision):
     #                          specified edge at the specified timestep
     #           Choose the agent randomly
     constraints = []
-    choosen_agent = 'a'+str(random.randint(1, 2))
-    if collision['type'] == 'vertex':
+    collision_type = collision.get('type')
+
+    # Choose agent randomly
+    agents = [collision['a1'], collision['a2']]
+    random.shuffle(agents)
+
+    if collision.get('type') == 'vertex':
         constraints.append({
-            'agent': collision[choosen_agent],
-            'loc': collision['loc'],
-            'timestep': collision['timestep'],
+            'timestep': collision.get('timestep'),
+            'loc': collision.get('loc'),
+            'agent': agents[0],
+            'type': "vertex",
             'final': False,
             'positive': True
         })
         constraints.append({
-            'agent': collision[choosen_agent],
-            'loc': collision['loc'],
-            'timestep': collision['timestep'],
+            'timestep': collision.get('timestep'),
+            'loc': collision.get('loc'),
+            'agent': agents[1],
+            'type': "vertex",
             'final': False,
             'positive': False
         })
-    elif collision['type'] == 'edge':
-        loc = collision['loc']
-        if choosen_agent == 'a1':
-            loc = list(reversed(loc))
 
+
+    else:
         constraints.append({
-            'agent': collision[choosen_agent],
-            'loc': loc,
-            'timestep': collision['timestep'],
+            'timestep': collision.get('timestep'),
+            'loc': collision.get('loc'),
+            'agent': agents[0],
+            'type': "edge",
             'final': False,
             'positive': True
         })
         constraints.append({
-            'agent': collision[choosen_agent],
-            'loc': loc,
-            'timestep': collision['timestep'],
+            'timestep': collision.get('timestep'),
+            'loc': list(reversed(collision['loc'])),
+            'agent': agents[1],
+            'type': "edge",
             'final': False,
             'positive': False
         })

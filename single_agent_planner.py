@@ -110,6 +110,13 @@ def is_constrained(curr_loc, next_loc, next_time, constraint_table):
         for c in constraints:
             if [next_loc] == c['loc'] and c['final']:
                 return True
+    # Adding new check
+    # Check disjoint vertex is satisfied
+    prv_time = next_time - 1
+    if prv_time in constraint_table:
+        for c in constraint_table[prv_time]:
+            if [curr_loc, next_loc] == c['loc'] and c['positive']:
+                return True
     return False
 
 
@@ -161,6 +168,7 @@ def a_star(my_map, start_loc, goal_loc, h_values, agent, constraints):
     root = {'loc': start_loc, 'g_val': 0, 'h_val': h_value, 'parent': None, 'time': 0}
     push_node(open_list, root)
     closed_list[(start_loc, 0)] = root
+    max_map_width = max([len(e) for e in my_map])
     while len(open_list) > 0:
         curr = pop_node(open_list)
         #############################
@@ -171,8 +179,10 @@ def a_star(my_map, start_loc, goal_loc, h_values, agent, constraints):
             # directions 0-3: the agent is moving, direction 4: the agent is still
             if direction < 4:
                 child_loc = move(curr['loc'], direction)
-                # the agent wants to go against an obstacle
-                if my_map[child_loc[0]][child_loc[1]]:
+                # check if the child location is outsite the map or the agent go against an obstacle
+                if child_loc[0] < 0 or child_loc[1] < 0 or \
+                        child_loc[0] >= len(my_map) or child_loc[1] >= max_map_width or \
+                        my_map[child_loc[0]][child_loc[1]]:
                     continue
                 child = {'loc': child_loc,
                          'g_val': curr['g_val'] + 1,
