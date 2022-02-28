@@ -110,13 +110,6 @@ def is_constrained(curr_loc, next_loc, next_time, constraint_table):
         for c in constraints:
             if [next_loc] == c['loc'] and c['final']:
                 return True
-    # Adding new check
-    # Check disjoint vertex is satisfied
-    prv_time = next_time - 1
-    if prv_time in constraint_table:
-        for c in constraint_table[prv_time]:
-            if [curr_loc, next_loc] == c['loc'] and c['positive']:
-                return True
     return False
 
 

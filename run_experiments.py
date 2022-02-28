@@ -5,6 +5,7 @@ from pathlib import Path
 from cbs import CBSSolver
 from independent import IndependentSolver
 from prioritized import PrioritizedPlanningSolver
+from random_instance import random_map
 from visualize import Animation
 from single_agent_planner import get_sum_of_cost
 
@@ -74,6 +75,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Runs various MAPF algorithms')
     parser.add_argument('--instance', type=str, default=None,
                         help='The name of the instance file(s)')
+    parser.add_argument('--random', action='store_true', default=False,
+                        help='Use random start and goal locations')
     parser.add_argument('--batch', action='store_true', default=False,
                         help='Use batch output instead of animation')
     parser.add_argument('--disjoint', action='store_true', default=False,
@@ -85,10 +88,10 @@ if __name__ == '__main__':
 
     result_file = open("results.csv", "w", buffering=1)
 
-    for file in sorted(glob.glob(args.instance)):
-
+    files = ["random.generated"] if args.random else glob.glob(args.instance)
+    for file in files:
         print("***Import an instance***")
-        my_map, starts, goals = import_mapf_instance(file)
+        my_map, starts, goals = random_map(5, 5, 5, .4) if args.random else import_mapf_instance(file)
         print_mapf_instance(my_map, starts, goals)
 
         if args.solver == "CBS":
