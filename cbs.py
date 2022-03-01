@@ -164,6 +164,7 @@ def disjoint_splitting(collision):
         })
     return constraints
 
+
 def paths_violate_constraint(constraint, paths):
     ##############################
     # Task 4.3: compute the list of agents that violates the positive constraints
@@ -184,10 +185,11 @@ def paths_violate_constraint(constraint, paths):
                     agents_violate.append(agent)
     return agents_violate
 
+
 class CBSSolver(object):
     """The high-level search of CBS."""
 
-    def __init__(self, my_map, starts, goals):
+    def __init__(self, my_map, starts, goals, max_time=None):
         """my_map   - list of lists specifying obstacle positions
         starts      - [(x1, y1), (x2, y2), ...] list of start locations
         goals       - [(x1, y1), (x2, y2), ...] list of goal locations
@@ -202,6 +204,7 @@ class CBSSolver(object):
         self.num_of_generated = 0
         self.num_of_expanded = 0
         self.CPU_time = 0
+        self.max_time =  max_time if max_time else float('inf')
 
         self.open_list = []
 
@@ -220,7 +223,7 @@ class CBSSolver(object):
         _, _, id, node = heapq.heappop(self.open_list)
         if DEBUG:
             print("Expand node {}".format(id))
-            self.num_of_expanded += 1
+        self.num_of_expanded += 1
         return node
 
     def find_solution(self, disjoint=True):
@@ -270,7 +273,7 @@ class CBSSolver(object):
         #                standard_splitting function). Add a new child node to your open list for each constraint
         #           Ensure to create a copy of any objects that your child nodes might inherit
 
-        while self.open_list:
+        while self.open_list and timer.time() - self.start_time < self.max_time:
             p = self.pop_node()
             # if there are no collisions, we found a solution
             if not p['collisions']:
@@ -316,6 +319,7 @@ class CBSSolver(object):
                             self.push_node(q)
                     else:
                         raise BaseException('No solutions')
+        raise BaseException('Time limit exceeded')
 
     def print_results(self, node):
         print("\n Found a solution! \n")

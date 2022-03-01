@@ -21,3 +21,16 @@ def random_map(height, width, agents, obstables_percentage):
                 map[i].append(True)
     return map, starts, goals
 
+def save_map(map, starts, goals, filename):
+    # Saves the map to a file
+    with open(filename, 'w') as f:
+        f.write('{} {}\n'.format(len(starts)))
+        for row in map:
+            f.write('{}\n'.format(''.join(['@' if cell else '.' for cell in row])))
+        for agent in range(len(starts)):
+            f.write('{} {} {} {}\n'.format(starts[agent][0], starts[agent][1], goals[agent][0], goals[agent][1]))
+
+if __name__== '__main__':
+    # Generates a random map and saves it to a file
+    map, starts, goals = random_map(10, 10, 5, 0.5)
+    save_map(map, starts, goals, 'random_map.txt')

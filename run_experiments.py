@@ -5,9 +5,11 @@ from pathlib import Path
 from cbs import CBSSolver
 from independent import IndependentSolver
 from prioritized import PrioritizedPlanningSolver
-from random_instance import random_map
+from random_instance import random_map, save_map
 from visualize import Animation
 from single_agent_planner import get_sum_of_cost
+import os
+import time as timer
 
 SOLVER = "CBS"
 
@@ -76,7 +78,9 @@ if __name__ == '__main__':
     parser.add_argument('--instance', type=str, default=None,
                         help='The name of the instance file(s)')
     parser.add_argument('--random', action='store_true', default=False,
-                        help='Use random start and goal locations')
+                        help='Use a random map with auto-genereted agents (see function random_map)')
+    parser.add_argument('--benchmark', action='store_true', default=False,
+                        help='Runs on benchmark mode')
     parser.add_argument('--batch', action='store_true', default=False,
                         help='Use batch output instead of animation')
     parser.add_argument('--disjoint', action='store_true', default=False,
@@ -88,33 +92,70 @@ if __name__ == '__main__':
 
     result_file = open("results.csv", "w", buffering=1)
 
-    files = ["random.generated"] if args.random else glob.glob(args.instance)
-    for file in files:
-        print("***Import an instance***")
-        my_map, starts, goals = random_map(10, 10, 15, .2) if args.random else import_mapf_instance(file)
-        print_mapf_instance(my_map, starts, goals)
+    if args.benchmark:
+        # Benchmark mode
+        time_limit = 30;map_size = 8;obstacles_dist = .2
+        result = {}
+        for max_agents in range(5, 15):
+            time_limit += 30 # add 30 seconds for each agent
+            map_size += 2 # add 2 columns for each agent
+            sample = {
+                "cbs": {'solved':0, 'unsolved':0, 'cpu_time':[0]*10, 'expanded':[0]*10, 'generated':[0]*10},
+                "cbs_disjoint": {'solved':0, 'unsolved':0, 'cpu_time':[0]*10, 'expanded':[0]*10, 'generated':[0]*10},
+            }
+            for _ in range(10):
+                my_map, starts, goals = random_map(map_size, map_size, max_agents, obstacles_dist)
+                filename = "benchmark/max_agents_{}/{}.txt".format(max_agents,_)
+                os.makedirs(os.path.dirname(filename), exist_ok=True)
+                save_map(my_map, starts, goals, filename)
+                solver = CBSSolver(my_map, starts, goals, 5)
+                for alg in ['cbs','cbs_disjoint']:
+                    # run CBS and CBS (disjoint)
+                    try:
+                        solver.find_solution(alg=='cbs_disjoint')
+                        sample[alg]['solved']+=1
+                        sample[alg]['cpu_time'][_] = round(timer.time() - solver.start_time,2)
+                        sample[alg]['expanded'][_] = solver.num_of_expanded
+                        sample[alg]['generated'][_] = solver.num_of_generated
+                    except BaseException as e:
+                        # Timeout
+                        sample[alg]['unsolved']+=1
+                        print("Time: " +str(e))
+            result[max_agents] = sample
+        print(result)
+        # animation = Animation(my_map, starts, goals, paths)
+        # animation.show()
 
-        if args.solver == "CBS":
-            print("***Run CBS***")
-            cbs = CBSSolver(my_map, starts, goals)
-            paths = cbs.find_solution(args.disjoint)
-        elif args.solver == "Independent":
-            print("***Run Independent***")
-            solver = IndependentSolver(my_map, starts, goals)
-            paths = solver.find_solution()
-        elif args.solver == "Prioritized":
-            print("***Run Prioritized***")
-            solver = PrioritizedPlanningSolver(my_map, starts, goals)
-            paths = solver.find_solution()
-        else:
-            raise RuntimeError("Unknown solver!")
+    else:
+        # Otherwise, run the algorithm
+        files = ["random.generated"] if args.random else glob.glob(args.instance)
+        for file in files:
+            print("***Import an instance***")
+            my_map, starts, goals = random_map(10, 10, 10, .1) if args.random else import_mapf_instance(file)
+            print_mapf_instance(my_map, starts, goals)
+            save_map(my_map, starts, goals,'random_map.txt')
+            if args.solver == "CBS":
+                print("***Run CBS***")
+                cbs = CBSSolver(my_map, starts, goals)
+                paths = cbs.find_solution(args.disjoint)
+            elif args.solver == "Independent":
+                print("***Run Independent***")
+                solver = IndependentSolver(my_map, starts, goals)
+                paths = solver.find_solution()
+            elif args.solver == "Prioritized":
+                print("***Run Prioritized***")
+                solver = PrioritizedPlanningSolver(my_map, starts, goals)
+                paths = solver.find_solution()
+            else:
+                raise RuntimeError("Unknown solver!")
 
-        cost = get_sum_of_cost(paths)
-        result_file.write("{},{}\n".format(file, cost))
+            cost = get_sum_of_cost(paths)
+            result_file.write("{},{}\n".format(file, cost))
 
-        if not args.batch:
-            print("***Test paths on a simulation***")
-            animation = Animation(my_map, starts, goals, paths)
-            # animation.save("output.mp4", 1.0)
-            animation.show()
+            if not args.batch:
+                print("***Test paths on a simulation***")
+                animation = Animation(my_map, starts, goals, paths)
+                # animation.save("output.mp4", 1.0)
+                animation.show()
+    print("***Done***")
     result_file.close()

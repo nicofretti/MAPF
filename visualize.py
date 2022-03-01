@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import animation
 
-Colors = ['green', 'blue', 'orange','brown','red','purple','yellow','pink','cyan','black']
+Colors = ['green', 'blue', 'orange','yellow']
 
 
 class Animation:
