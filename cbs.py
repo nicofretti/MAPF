@@ -229,7 +229,7 @@ class CBSSolver(object):
         self.num_of_expanded += 1
         return node
 
-    def find_solution(self, disjoint=True):
+    def find_solution(self, disjoint=False):
         """ Finds paths for all agents from their start locations to their goal locations
 
         disjoint    - use disjoint splitting or not
@@ -325,9 +325,10 @@ class CBSSolver(object):
         raise BaseException('Time limit exceeded')
 
     def print_results(self, node):
-        print("\n Found a solution! \n")
-        CPU_time = timer.time() - self.start_time
-        print("CPU time (s):    {:.2f}".format(CPU_time))
-        print("Sum of costs:    {}".format(get_sum_of_cost(node['paths'])))
-        print("Expanded nodes:  {}".format(self.num_of_expanded))
-        print("Generated nodes: {}".format(self.num_of_generated))
+        pass
+        #print("\n Found a solution! \n")
+        #CPU_time = timer.time() - self.start_time
+        #print("CPU time (s):    {:.2f}".format(CPU_time))
+        #print("Sum of costs:    {}".format(get_sum_of_cost(node['paths'])))
+        #print("Expanded nodes:  {}".format(self.num_of_expanded))
+        #print("Generated nodes: {}".format(self.num_of_generated))
