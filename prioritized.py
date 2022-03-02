@@ -5,7 +5,7 @@ from single_agent_planner import compute_heuristics, a_star, get_sum_of_cost
 class PrioritizedPlanningSolver(object):
     """A planner that plans for each robot sequentially."""
 
-    def __init__(self, my_map, starts, goals):
+    def __init__(self, my_map, starts, goals, max_time=None):
         """my_map   - list of lists specifying obstacle positions
         starts      - [(x1, y1), (x2, y2), ...] list of start locations
         goals       - [(x1, y1), (x2, y2), ...] list of goal locations
@@ -15,7 +15,9 @@ class PrioritizedPlanningSolver(object):
         self.starts = starts
         self.goals = goals
         self.num_of_agents = len(goals)
-
+        self.max_time = max_time if max_time else float('inf')
+        self.num_of_expanded = 0
+        self.num_of_generated = 0
         self.CPU_time = 0
 
         # compute heuristics for the low-level search
@@ -32,6 +34,8 @@ class PrioritizedPlanningSolver(object):
 
         for i in range(self.num_of_agents):  # Find path for each agent
             path = a_star(self.my_map, self.starts[i], self.goals[i], self.heuristics[i], i, constraints)
+            if timer.time() - self.start_time >= self.max_time:
+                raise BaseException("Time limit exceeded")
             if path is None:
                 raise BaseException('No solutions')
             result.append(path)

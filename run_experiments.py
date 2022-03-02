@@ -5,7 +5,7 @@ from pathlib import Path
 from cbs import CBSSolver
 from independent import IndependentSolver
 from prioritized import PrioritizedPlanningSolver
-from random_instance import random_map, save_map
+from random_instance import random_map, save_map, correct_random_map
 from visualize import Animation
 from single_agent_planner import get_sum_of_cost
 import os
@@ -71,7 +71,7 @@ def import_mapf_instance(filename):
         goals.append((gx, gy))
     f.close()
     return my_map, starts, goals
-
+import json
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Runs various MAPF algorithms')
@@ -94,44 +94,47 @@ if __name__ == '__main__':
 
     if args.benchmark:
         # Benchmark mode
-        time_limit = 30;map_size = 8;obstacles_dist = .2
+        map_size = 10;obstacles_dist = .2
+        experiment = 0
         result = {}
-        for max_agents in range(5, 15):
-            time_limit += 30 # add 30 seconds for each agent
-            map_size += 2 # add 2 columns for each agent
+        start_agents = 5
+        for max_agents in range(start_agents, 16):
             sample = {
-                "cbs": {'solved':0, 'unsolved':0, 'cpu_time':[0]*10, 'expanded':[0]*10, 'generated':[0]*10},
-                "cbs_disjoint": {'solved':0, 'unsolved':0, 'cpu_time':[0]*10, 'expanded':[0]*10, 'generated':[0]*10},
+                "cbs": {},
+                "cbs_disjoint": {},
             }
-            for _ in range(10):
-                my_map, starts, goals = random_map(map_size, map_size, max_agents, obstacles_dist)
-                filename = "benchmark/max_agents_{}/{}.txt".format(max_agents,_)
+            result[max_agents] = {'cbs': {'cpu_time':[-1]*10, 'expanded':[-1]*10, 'generated':[-1]*10},
+                                  'cbs_disjoint': {'cpu_time':[-1]*10, 'expanded':[-1]*10, 'generated':[-1]*10},
+                                  'prioritized': {'cpu_time': [-1] * 10, 'expanded': [-1] * 10, 'generated': [-1] * 10}
+                                  }
+            for _ in range(5):
+                experiment += 1
+                print(experiment)
+                my_map, starts, goals = correct_random_map(map_size, map_size, start_agents, obstacles_dist)
+                filename = "benchmark/max_agents_{}/test_{}.txt".format(max_agents, _)
                 os.makedirs(os.path.dirname(filename), exist_ok=True)
                 save_map(my_map, starts, goals, filename)
-                solver = CBSSolver(my_map, starts, goals, 5)
-                for alg in ['cbs','cbs_disjoint']:
-                    # run CBS and CBS (disjoint)
+                for alg in ['cbs','cbs_disjoint','prioritized']:
+                    solver =  PrioritizedPlanningSolver(my_map,starts,goals,60*2) if alg == 'prioritized' else CBSSolver(my_map,starts,goals,60*2)
                     try:
-                        solver.find_solution(alg=='cbs_disjoint')
-                        sample[alg]['solved']+=1
-                        sample[alg]['cpu_time'][_] = round(timer.time() - solver.start_time,2)
-                        sample[alg]['expanded'][_] = solver.num_of_expanded
-                        sample[alg]['generated'][_] = solver.num_of_generated
+                        if alg == "prioritized":
+                            solver.find_solution()
+                        else:
+                            solver.find_solution(alg=='cbs_disjoint')
+                        result[max_agents][alg]['cpu_time'][_] = round(timer.time() - solver.start_time,2)
                     except BaseException as e:
                         # Timeout
-                        sample[alg]['unsolved']+=1
-                        print("Time: " +str(e))
-            result[max_agents] = sample
-        print(result)
-        # animation = Animation(my_map, starts, goals, paths)
-        # animation.show()
-
+                        result[max_agents][alg]['cpu_time'][_] = 120
+                    result[max_agents][alg]['expanded'][_] = solver.num_of_expanded
+                    result[max_agents][alg]['generated'][_] = solver.num_of_generated
+        with open('benchmark/result.json', 'w') as outfile:
+            json.dump(result, outfile)
     else:
         # Otherwise, run the algorithm
         files = ["random.generated"] if args.random else glob.glob(args.instance)
         for file in files:
             print("***Import an instance***")
-            my_map, starts, goals = random_map(8, 8, 6, .5) if args.random else import_mapf_instance(file)
+            my_map, starts, goals = random_map(10, 10, 10, .2) if args.random else import_mapf_instance(file)
             print_mapf_instance(my_map, starts, goals)
             save_map(my_map, starts, goals, 'img/output_map.txt')
             if args.solver == "CBS":
