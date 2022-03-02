@@ -131,9 +131,9 @@ if __name__ == '__main__':
         files = ["random.generated"] if args.random else glob.glob(args.instance)
         for file in files:
             print("***Import an instance***")
-            my_map, starts, goals = random_map(10, 10, 10, .1) if args.random else import_mapf_instance(file)
+            my_map, starts, goals = random_map(8, 8, 6, .5) if args.random else import_mapf_instance(file)
             print_mapf_instance(my_map, starts, goals)
-            save_map(my_map, starts, goals,'random_map.txt')
+            save_map(my_map, starts, goals, 'img/output_map.txt')
             if args.solver == "CBS":
                 print("***Run CBS***")
                 cbs = CBSSolver(my_map, starts, goals)
@@ -155,7 +155,7 @@ if __name__ == '__main__':
             if not args.batch:
                 print("***Test paths on a simulation***")
                 animation = Animation(my_map, starts, goals, paths)
-                # animation.save("output.mp4", 1.0)
+                animation.save("output.mp4", 1.0)
                 animation.show()
     print("***Done***")
     result_file.close()
