@@ -93,43 +93,36 @@ if __name__ == '__main__':
 
     result_file = open("results.csv", "w", buffering=1)
     if args.benchmark:
-        print("fuck")
         # Benchmark mode
 
         if args.benchmark == "random":
-            map_size = 10;obstacles_dist = .2
-            experiment = 0
-            result = {}
+            map_size = 10;obstacles_dist = .05;max_agents=20
+            experiment = 0;max_time = 60 * 2
+            result = {};samples = 20
             start_agents = 5
-            for max_agents in range(start_agents, 16):
+            for agents in range(start_agents, max_agents):
+                print(agents)
                 sample = {
                     "cbs": {},
                     "cbs_disjoint": {},
                 }
-                result[max_agents] = {'cbs': {'cpu_time':[-1]*10, 'expanded':[-1]*10, 'generated':[-1]*10},
-                                      'cbs_disjoint': {'cpu_time':[-1]*10, 'expanded':[-1]*10, 'generated':[-1]*10},
-                                      'prioritized': {'cpu_time': [-1] * 10, 'expanded': [-1] * 10, 'generated': [-1] * 10}
+                result[agents] = {'cbs': {'cpu_time':[-1]*samples, 'expanded':[-1]*samples},
+                                      'cbs_disjoint': {'cpu_time':[-1]*samples, 'expanded':[-1]*samples},
                                       }
-                for _ in range(5):
-                    experiment += 1
-                    print(experiment)
-                    my_map, starts, goals = random_map(map_size, map_size, start_agents, obstacles_dist)
-                    filename = "benchmark/max_agents_{}/test_{}.txt".format(max_agents, _)
+                for _ in range(samples):
+                    my_map, starts, goals = random_map(map_size, map_size, agents, obstacles_dist)
+                    filename = "benchmark/max_agents_{}/test_{}.txt".format(agents, _)
                     os.makedirs(os.path.dirname(filename), exist_ok=True)
                     save_map(my_map, starts, goals, filename)
-                    for alg in ['cbs','cbs_disjoint','prioritized']:
-                        solver =  PrioritizedPlanningSolver(my_map,starts,goals,60*5) if alg == 'prioritized' else CBSSolver(my_map,starts,goals,60*5)
+                    for alg in ['cbs','cbs_disjoint']:
+                        solver =  CBSSolver(my_map,starts,goals,max_time)
                         try:
-                            if alg == "prioritized":
-                                solver.find_solution()
-                            else:
-                                solver.find_solution(alg=='cbs_disjoint')
-                            result[max_agents][alg]['cpu_time'][_] = round(timer.time() - solver.start_time,2)
+                            solver.find_solution(alg=='cbs_disjoint')
+                            result[agents][alg]['cpu_time'][_] = round(timer.time() - solver.start_time,2)
                         except BaseException as e:
                             # Timeout
-                            result[max_agents][alg]['cpu_time'][_] = 120
-                        result[max_agents][alg]['expanded'][_] = solver.num_of_expanded
-                        result[max_agents][alg]['generated'][_] = solver.num_of_generated
+                            pass
+                        result[agents][alg]['expanded'][_] = solver.num_of_expanded
             with open('benchmark/result.json', 'w') as outfile:
                 json.dump(result, outfile)
         if args.benchmark == "success":
