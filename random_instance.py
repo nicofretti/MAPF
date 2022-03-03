@@ -23,11 +23,11 @@ def correct_random_map(height, width, agents, obstables_percentage):
                 map[i].append(True)
     # Check if the map is valid
     try:
-        solver = CBSSolver(map, starts, goals,6) # exists a solution in 5 minutes
-        solver.find_solution(True)
+        solver = CBSSolver(map, starts, goals, 60*10) # exists a solution in 5 minutes
+        solver.find_solution()
     except BaseException as e:
         # Map is not valid
-        print("No solution, new map")
+        # print("No solution, new map")
         return correct_random_map(height, width, agents, obstables_percentage)
     return map, starts, goals
 
