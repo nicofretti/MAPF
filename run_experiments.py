@@ -91,7 +91,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     result_file = open("results.csv", "w", buffering=1)
-
+    test = 15
     if args.benchmark:
         # Benchmark mode
         map_size = 10;obstacles_dist = .2
@@ -99,15 +99,11 @@ if __name__ == '__main__':
         result = {}
         start_agents = 5
         for max_agents in range(start_agents, 16):
-            sample = {
-                "cbs": {},
-                "cbs_disjoint": {},
-            }
-            result[max_agents] = {'cbs': {'cpu_time':[-1]*10, 'expanded':[-1]*10, 'generated':[-1]*10},
-                                  'cbs_disjoint': {'cpu_time':[-1]*10, 'expanded':[-1]*10, 'generated':[-1]*10},
-                                  'prioritized': {'cpu_time': [-1] * 10, 'expanded': [-1] * 10, 'generated': [-1] * 10}
+            result[max_agents] = {'cbs': {'cpu_time':[-1]*test, 'expanded':[-1]*test, 'generated':[-1]*test},
+                                  'cbs_disjoint': {'cpu_time':[-1]*test, 'expanded':[-1]*test, 'generated':[-1]*test},
+                                  'prioritized': {'cpu_time': [-1] * test, 'expanded': [-1] * test, 'generated': [-1] *test}
                                   }
-            for _ in range(5):
+            for _ in range(test):
                 experiment += 1
                 print(experiment)
                 my_map, starts, goals = correct_random_map(map_size, map_size, start_agents, obstacles_dist)
