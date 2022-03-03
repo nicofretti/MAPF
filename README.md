@@ -4,9 +4,9 @@ The MAPF (Multi-Agent Path Finding) is the planning problem to find a path betwe
 ```bash
 python run_experiments.py --disjoint --random --solver CBS
 ```
-<center>
-    <img style="width:400px;height:400px;align-center" src="img/output.gif"/>
-</center>
+<div style="text-align: center;">
+    <img style="width:400px;height:400px" src="img/output.gif"/>
+</div>
 
 
 
@@ -27,7 +27,11 @@ In my solution there are the following steps:
 
 ##### Plot 1
 The plot shows the time that the solver takes to solve the 25 random maps for each number of agents. The numbers of agents start from 5 to 20 and the time limit is set to 2 minutes. Every map is a 10x10 grid with a probability of 5% of obstacles for each cell.
-<plt>
+<div style="text-align: center;">
+    <img style="width:400px;height:400px" src="img/plot_1.png"/>
+    <img style="width:400px;height:400px" src="img/plot_2.png"/>
+</div>
+
 ##### Plot 2
-In this plot I've generated a random map with obstacles distributed in the 5% of the map. The idea is to increase the number of agents and see if the algoritm can solver the problem in less than 5 minutes. For each number of agents is used the same map for 25 times, but the start and goal positions randomly distributed. Idea taken from this [paper](http://idm-lab.org/bib/abstracts/papers/icaps19a.pdf)
-<plt>
+In this plot I've generated a random map with obstacles distributed in the 5% of the map. The idea is to increase the number of agents (from 5 to 25) and see if the algoritm can solver the problem in less than 5 minutes. For each number of agents is used the same map for 25 times, but the start and goal positions randomly distributed. Idea taken from this [paper](http://idm-lab.org/bib/abstracts/papers/icaps19a.pdf)
+

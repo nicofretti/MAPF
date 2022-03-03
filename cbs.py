@@ -120,7 +120,6 @@ def disjoint_splitting(collision):
     #                          specified edge at the specified timestep
     #           Choose the agent randomly
     constraints = []
-    collision_type = collision.get('type')
 
     # Choose agent randomly
     agents = [collision['a1'], collision['a2']]
