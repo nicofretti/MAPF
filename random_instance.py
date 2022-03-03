@@ -27,7 +27,7 @@ def correct_random_map(height, width, agents, obstables_percentage):
         solver.find_solution()
     except BaseException as e:
         # Map is not valid
-        print("No solution, new map")
+        # print("No solution, new map")
         return correct_random_map(height, width, agents, obstables_percentage)
     return map, starts, goals
 
