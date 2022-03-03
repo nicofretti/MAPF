@@ -134,13 +134,13 @@ if __name__ == '__main__':
                 json.dump(result, outfile)
         if args.benchmark == "success":
             obstacles_dist = .05; map_size = 20; max_agents = 40
-            time_limit = 60*10
+            time_limit = 60*5
             results = {}
             cont = 0
             map, starts, goals = random_map(map_size, map_size, max_agents, obstacles_dist)
             save_map(map, starts, goals, "benchmark/{}_agents_success.txt".format(max_agents))
-            for agents in range(5,20):
-                results[max_agents] = {'cbs':[0,0], 'cbs_disjoint':[0,0]}
+            for agents in range(5,25):
+                results[agents] = {'cbs':[0,0], 'cbs_disjoint':[0,0]}
                 for i in range(20):
                     # take first i agents
                     random.shuffle(starts);sub_goals = goals[0:agents]
@@ -151,10 +151,10 @@ if __name__ == '__main__':
                         solver = CBSSolver(map,sub_starts,sub_goals,time_limit)
                         try:
                             solver.find_solution(alg=='cbs_disjoint')
-                            results[max_agents][alg][0] += 1
+                            results[agents][alg][0] += 1
                         except BaseException as e:
                             # Timeout
-                            results[max_agents][alg][1] += 1
+                            results[agents][alg][1] += 1
             print(results)
             with open('benchmark/result_success.json', 'w') as outfile:
                 json.dump(results, outfile)
