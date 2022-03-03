@@ -154,11 +154,10 @@ if __name__ == '__main__':
 
     else:
         # Otherwise, run the algorithm
-        print("here")
         files = ["random.generated"] if args.random else glob.glob(args.instance)
         for file in files:
             print("***Import an instance***")
-            my_map, starts, goals = random_map(10, 10, 10, .2) if args.random else import_mapf_instance(file)
+            my_map, starts, goals = random_map(8, 8, 6, .1) if args.random else import_mapf_instance(file)
             print_mapf_instance(my_map, starts, goals)
             save_map(my_map, starts, goals, 'img/output_map.txt')
             if args.solver == "CBS":
