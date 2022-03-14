@@ -311,6 +311,7 @@ class CBSSolver(object):
                                 if r_path is None:
                                     skip_node = True
                                     break # at least one agents has none solution
+                                q['paths'][r_agent] = r_path
                         q['collisions'] = detect_collisions(q['paths'])
                         q['cost'] = get_sum_of_cost(q['paths'])
                         if(not skip_node):
