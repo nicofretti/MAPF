@@ -94,22 +94,18 @@ if __name__ == '__main__':
     result_file = open("results.csv", "w", buffering=1)
     if args.benchmark:
         # Benchmark mode
-
         if args.benchmark == "random":
-            map_size = 10;obstacles_dist = .05;max_agents=20
-            experiment = 0;max_time = 60 * 2
+            map_size = 10;obstacles_dist = .01;max_agents=14
+            experiment = 0;max_time = 5
             result = {};samples = 20
-            start_agents = 5
-            for agents in range(start_agents, max_agents):
-                print(agents)
-                sample = {
-                    "cbs": {},
-                    "cbs_disjoint": {},
+            start_agents = 4
+            for agents in range(start_agents, max_agents,2):
+                result[agents] = {
+                    'cbs': {'cpu_time':[-1]*samples, 'expanded':[-1]*samples},
+                    'cbs_disjoint': {'cpu_time':[-1]*samples, 'expanded':[-1]*samples},
                 }
-                result[agents] = {'cbs': {'cpu_time':[-1]*samples, 'expanded':[-1]*samples},
-                                      'cbs_disjoint': {'cpu_time':[-1]*samples, 'expanded':[-1]*samples},
-                                      }
                 for _ in range(samples):
+                    print("Samples {} with {} agents".format(_, agents))
                     my_map, starts, goals = random_map(map_size, map_size, agents, obstacles_dist)
                     filename = "benchmark/max_agents_{}/test_{}.txt".format(agents, _)
                     os.makedirs(os.path.dirname(filename), exist_ok=True)
@@ -123,34 +119,37 @@ if __name__ == '__main__':
                             # Timeout
                             pass
                         result[agents][alg]['expanded'][_] = solver.num_of_expanded
-            with open('benchmark/result.json', 'w') as outfile:
+            with open('benchmark/result_x.json', 'w') as outfile:
                 json.dump(result, outfile)
         if args.benchmark == "success":
-            obstacles_dist = .05; map_size = 20; max_agents = 40
-            time_limit = 60*5
-            results = {}
-            cont = 0
+            obstacles_dist = .05; map_size = 20; max_agents = 14
+            samples = 10
+            time_limit = 5
+            result = {}
             map, starts, goals = random_map(map_size, map_size, max_agents, obstacles_dist)
             save_map(map, starts, goals, "benchmark/{}_agents_success.txt".format(max_agents))
-            for agents in range(5,25):
-                results[agents] = {'cbs':[0,0], 'cbs_disjoint':[0,0]}
-                for i in range(20):
+            for agents in range(4,max_agents + 1,2):
+                result[agents] = {
+                    'cbs': {'cpu_time': [-1] * samples, 'expanded': [-1] * samples},
+                    'cbs_disjoint': {'cpu_time': [-1] * samples, 'expanded': [-1] * samples},
+                }
+                for i in range(samples):
                     # take first i agents
                     random.shuffle(starts);sub_goals = goals[0:agents]
                     random.shuffle(goals);sub_starts = starts[0:agents]
-                    cont += 1
-                    print("{}/{}/{} - agents: {}".format(i,cont, 20 * 20, agents))
+                    print("sample {} with {} agents".format(i,agents))
                     for alg in ['cbs','cbs_disjoint']:
                         solver = CBSSolver(map,sub_starts,sub_goals,time_limit)
                         try:
                             solver.find_solution(alg=='cbs_disjoint')
-                            results[agents][alg][0] += 1
+                            result[agents][alg]['cpu_time'][i] = round(timer.time() - solver.start_time, 2)
                         except BaseException as e:
                             # Timeout
-                            results[agents][alg][1] += 1
-            print(results)
+                            pass
+                        result[agents][alg]['expanded'][i] = solver.num_of_expanded
+            print(result)
             with open('benchmark/result_success.json', 'w') as outfile:
-                json.dump(results, outfile)
+                json.dump(result, outfile)
 
     else:
         # Otherwise, run the algorithm
