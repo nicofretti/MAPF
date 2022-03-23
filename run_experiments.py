@@ -95,7 +95,7 @@ if __name__ == '__main__':
     if args.benchmark:
         # Benchmark mode
         if args.benchmark == "random":
-            map_size = 10;obstacles_dist = .01;max_agents=14
+            map_size = 10;obstacles_dist = .05;max_agents=8
             experiment = 0;max_time = 5
             result = {};samples = 20
             start_agents = 4
@@ -119,11 +119,11 @@ if __name__ == '__main__':
                             # Timeout
                             pass
                         result[agents][alg]['expanded'][_] = solver.num_of_expanded
-            with open('benchmark/result_x.json', 'w') as outfile:
+            with open('benchmark/result.json', 'w') as outfile:
                 json.dump(result, outfile)
         if args.benchmark == "success":
-            obstacles_dist = .05; map_size = 20; max_agents = 14
-            samples = 10
+            obstacles_dist = .05; map_size = 20; max_agents = 26
+            samples = 20
             time_limit = 5
             result = {}
             map, starts, goals = random_map(map_size, map_size, max_agents, obstacles_dist)

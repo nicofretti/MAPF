@@ -303,10 +303,11 @@ class CBSSolver(object):
         raise BaseException('Time limit exceeded')
 
     def print_results(self, node):
+        pass
         #if DEBUG:
-        print("\n Found a solution! \n")
-        CPU_time = timer.time() - self.start_time
-        print("CPU time (s):    {:.2f}".format(CPU_time))
-        print("Sum of costs:    {}".format(get_sum_of_cost(node['paths'])))
-        print("Expanded nodes:  {}".format(self.num_of_expanded))
-        print("Generated nodes: {}".format(self.num_of_generated))
+        #print("\n Found a solution! \n")
+        #CPU_time = timer.time() - self.start_time
+        #print("CPU time (s):    {:.2f}".format(CPU_time))
+        #print("Sum of costs:    {}".format(get_sum_of_cost(node['paths'])))
+        #print("Expanded nodes:  {}".format(self.num_of_expanded))
+        #print("Generated nodes: {}".format(self.num_of_generated))

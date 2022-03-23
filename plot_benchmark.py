@@ -72,7 +72,7 @@ if __name__ == "__main__":
         plt.tight_layout()
         plt.show()
     else:
-        json_file = open('benchmark/result_success_x.json')
+        json_file = open('benchmark/sample.json')
         data = json.load(json_file)
         fig,ax = plt.subplots()
         ax.set_title('Success rate for CBS and CBS-disjoint')
