@@ -3,7 +3,7 @@ import time as timer
 import heapq
 from single_agent_planner import compute_heuristics, a_star, get_location, get_sum_of_cost
 
-DEBUG = False
+DEBUG = True
 
 
 def normalize_paths(pathA, pathB):
@@ -312,9 +312,9 @@ class CBSSolver(object):
                                     skip_node = True
                                     break # at least one agents has none solution
                                 q['paths'][r_agent] = r_path
-                        q['collisions'] = detect_collisions(q['paths'])
-                        q['cost'] = get_sum_of_cost(q['paths'])
                         if(not skip_node):
+                            q['collisions'] = detect_collisions(q['paths'])
+                            q['cost'] = get_sum_of_cost(q['paths'])
                             self.push_node(q)
                     else:
                         raise BaseException('No solutions')

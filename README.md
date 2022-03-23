@@ -8,8 +8,6 @@ python run_experiments.py --disjoint --random --solver CBS
     <img style="width:400px;height:400px" src="img/output.gif"/>
 </div>
 
-
-
 ### Task 4
 The target of this taks is to implement the CBS (Conflict-Based Search) with Disjoint Splitting that means (in a few words)
 to add the support of positive contraints to the CBS algorithm. The CBS algorithm use the negative contraints to
@@ -17,8 +15,8 @@ indicate conflicts between agents, the idea of the positive contraints is to for
 in the specified time.
 
 ### Task 5
-In this task I've to benchmark the performance of MAPF solvers, I choose to make a custom benchmark that is
-based on some random maps genereted in runtime.
+In this task I will benchmark the performance of MAPF solvers, I choose to make a custom benchmark that is
+based on some random maps genereted at runtime.
 
 In my solution there are the following steps:
 - Generate a random map
@@ -26,11 +24,12 @@ In my solution there are the following steps:
 - Increase the number of agents and repeat the process
 
 ##### Plot 1
-The plot shows the time that the solver takes to solve the 25 random maps for each number of agents. The numbers of agents start from 5 to 20 and the time limit is set to 2 minutes. Every map is a 10x10 grid with a probability of 5% of obstacles for each cell.
+The plot shows the time that the solver takes to solve the 25 random maps for each number of agents. The numbers of agents start from 5 to 20 and the time limit is set to 2 minutes. Every map is a 10x10 grid with a probability of 5% for each cell of been occopied.
 <div style="text-align: center;">
     <img style="width:400px;height:400px" src="img/plot_1.png"/>
     <img style="width:400px;height:400px" src="img/plot_2.png"/>
 </div>
+# Standard error of the mean n = numero di prove
 
 ##### Plot 2
 In this plot I've generated a random map with obstacles distributed in the 5% of the map. The idea is to increase the number of agents (from 5 to 25) and see if the algoritm can solver the problem in less than 5 minutes. For each number of agents is used the same map for 25 times, but the start and goal positions randomly distributed. Idea taken from this [paper](http://idm-lab.org/bib/abstracts/papers/icaps19a.pdf)
