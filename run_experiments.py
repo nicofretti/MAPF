@@ -95,9 +95,9 @@ if __name__ == '__main__':
     if args.benchmark:
         # Benchmark mode
         if args.benchmark == "random":
-            map_size = 10;obstacles_dist = .05;max_agents=8
-            experiment = 0;max_time = 5
-            result = {};samples = 20
+            map_size = 10;obstacles_dist = .05;max_agents=20
+            experiment = 0;max_time = 2*60
+            result = {};samples = 25
             start_agents = 4
             for agents in range(start_agents, max_agents,2):
                 result[agents] = {
@@ -123,8 +123,8 @@ if __name__ == '__main__':
                 json.dump(result, outfile)
         if args.benchmark == "success":
             obstacles_dist = .05; map_size = 20; max_agents = 26
-            samples = 20
-            time_limit = 5
+            samples = 25
+            time_limit = 5*60
             result = {}
             map, starts, goals = random_map(map_size, map_size, max_agents, obstacles_dist)
             save_map(map, starts, goals, "benchmark/{}_agents_success.txt".format(max_agents))
