@@ -4,9 +4,9 @@ The MAPF (Multi-Agent Path Finding) is the problem of computing a collision-free
 ```bash
 python run_experiments.py --disjoint --random --solver CBS
 ```
-<div style="text-align: center;">
-    <img style="width:400px;height:400px" src="img/output.gif"/>
-</div>
+<p style="align:center">
+    <img style="width:400px" src="img/output.gif"/>
+</p>
 
 ### Task 4
 The target of this task is to implement the CBS (Conflict-Based Search) with Disjoint Splitting that means (in a few words)
