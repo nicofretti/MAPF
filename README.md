@@ -35,10 +35,11 @@ python plot_benchmark.py --benchmark random
 ```
 A possible output is the following:
 <p align="center">
-    <img style="max-width:300px" src="img/plot_1_1.png"/>
-    <img style="max-width:300px" src="img/plot_1_2.png"/>
-    <img style="max-width:300px" src="img/plot_1_3.png"/>
+    <img style="zoom:67%" src="img/plot_1_1.png"/>
+    <img style="zoom:67%" src="img/plot_1_2.png"/>
+    <img style="zoom:67%" src="img/plot_1_3.png"/>
 </p>
+
 
 
 #### Benchmark success
@@ -53,6 +54,6 @@ When the benchmark is finished (it can take more the one hour) you can see the p
 python plot_benchmark.py --plot success
 ```
 <p align="center">
-    <img style="max-width: 300px" src="img/plot_2_1.png"/>
-    <img style="max-width: 300px" src="img/plot_2_2.png"/>
+    <img style="zoom:67%" src="img/plot_2_1.png"/>
+    <img style="zoom:67%" src="img/plot_2_2.png"/>
 </p>
