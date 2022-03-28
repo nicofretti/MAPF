@@ -1,0 +1,17 @@
+cycler==0.11.0
+fonttools==4.31.2
+kiwisolver==1.4.2
+matplotlib==3.5.1
+numpy==1.22.3
+packaging==21.3
+pandas==1.4.1
+Pillow==9.0.1
+pyparsing==3.0.7
+PyQt5==5.15.6
+PyQt5-Qt5==5.15.2
+PyQt5-sip==12.9.1
+python-dateutil==2.8.2
+pytz==2022.1
+scipy==1.8.0
+seaborn==0.11.2
+six==1.16.0
