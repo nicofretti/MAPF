@@ -1,85 +1,105 @@
 import json
-from statistics import mean
-
-import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+ALGORITMS = ['cbs', 'cbs_disjoint']
+
+def plot_time_area(data, time_limit):
+    """
+    Plot cpu time of the be
+    """
+    keys = list(data.keys())
+    start,finish = int(keys[0]), int(keys[-1])+2
+    sns.set_theme(style="darkgrid")
+    x_axis = [i for i in range(start,finish,2)]
+    y_axis = []
+    for alg in ALGORITMS:
+        d = []
+        for i in range(start,finish,2):
+            sub = data[str(i)][alg]['cpu_time']
+            sub = [time_limit if x == -1 else x for x in sub]
+            d.append(sub)
+
+        y_axis.append(d)
+    # d is a list of lists
+    std_of_mean = [] # standard error of the mean
+    for alg in [0,1]:
+        std_of_mean.append([])
+        for i in range(len(y_axis[alg])):
+            std_of_mean[alg].append(np.std(y_axis[alg][i], ddof=1) / np.sqrt(np.size(y_axis[alg][i])))
+    data = pd.DataFrame(
+        data={
+            'agents': x_axis,
+            'cbs': [np.mean(x) for x in y_axis[0]],
+            'cbs_disjoint': [np.mean(x) for x in y_axis[1]]
+        }
+    )
+    plt = sns.lineplot(data=data.set_index('agents'), palette="tab10", linewidth=2.5)
+    plt.set(xlabel='Agents', ylabel='CPU time (s)')
+    plt.axes.set_xticks(np.arange(start, finish, 2.0))
+
+def plot_success_rate(data):
+    """
+    Plot the success rate of the benchmark.
+    """
+    keys = list(data.keys())
+    start,finish = int(keys[0]), int(keys[-1])+1
+    sns.set_theme(style="darkgrid")
+    x_axis = [i for i in range(start,finish,2)]
+    d = {}
+    for alg in ALGORITMS:
+        d[alg] = []
+        for agents in data:
+            success = 0
+            for sample in data[agents][alg]['cpu_time']:
+                if(sample != -1):
+                    success += 1
+            d[alg].append(success)
+    data = pd.DataFrame(
+        data={
+            'agents': x_axis,
+            'cbs': d['cbs'],
+            'cbs_disjoint': d['cbs_disjoint']
+        }
+    )
+    plt = sns.lineplot(data=data.set_index('agents'), palette="tab10", linewidth=2.5)
+    plt.set(xlabel='Agents', ylabel='Problems solved (target=25)')
+    plt.axes.set_xticks(np.arange(start, finish + 1, 2.0))
+
+def plot_expanded_nodes(data, default_nodes= 1000):
+    """
+    Plot cpu time of the be
+    """
+    keys = list(data.keys())
+    start,finish = int(keys[0]), int(keys[-1])+2
+    sns.set_theme(style="darkgrid")
+    x_axis = [i for i in range(start,finish,2)]
+    y_axis = []
+    for alg in ALGORITMS:
+        d = []
+        for i in range(start,finish,2):
+            sub = data[str(i)][alg]['expanded']
+            sub = [default_nodes if x == -1 else x for x in sub]
+            d.append(np.mean(sub))
+        y_axis.append(d)
+    data = pd.DataFrame(
+        data={
+            'agents': x_axis,
+            'cbs': y_axis[0],
+            'cbs_disjoint': y_axis[1]
+        }
+    )
+    plt = sns.lineplot(data=data.set_index('agents'), palette="tab10", linewidth=2.5)
+    plt.set(xlabel='Agents', ylabel='Expanded nodes')
+    plt.axes.set_xticks(np.arange(start, finish, 2.0))
+
 
 if __name__ == "__main__":
-    benchmark = "success"
-    algoritms = ['cbs', 'cbs_disjoint']
-    if benchmark == "random":
-        json_file = open('benchmark/result_x.json')
-        data = json.load(json_file)
-        x = [i + 5 for i in range(len(data))]
-        stats = {
-            'cbs': {
-                'cpu_time': [],
-                'unsolved': []
-            },
-            'cbs_disjoint': {
-                'cpu_time': [],
-                'unsolved': []
-            },
-        }
-
-        # fix some stats like -1 for not don't computed
-        for max_agents in data:
-            for algo in algoritms:
-                cpu = np.asarray(data[max_agents][algo]['cpu_time'])
-                stats[algo]['unsolved'].append(np.count_nonzero(cpu == -1))
-                cpu[cpu == -1] = 0
-                data[max_agents][algo]['cpu_time'] = cpu
-
-        # calc stats
-        for max_agents in data:
-            row = data[max_agents]
-            for alg in algoritms:
-                stats[alg]['cpu_time'].append(mean(row[alg]['cpu_time']))
-        # ----- CPU time -----
-        fig = plt.figure()
-        plt.suptitle('CPU time for CBS and CBS-disjoint')
-        plt.xlabel('Number of agents')
-        plt.ylabel('CPU time (s)')
-        for alg in algoritms:
-            plt.plot(x, stats[alg]['cpu_time'], label=alg)
-        plt.tight_layout()
-        plt.legend()
-        plt.show()
-
-        # ----- Bar plot -----
-        fig, ax = plt.subplots(2)
-        fig.suptitle("Number of problem solved/unsolved by algorithm")
-        x = 0
-
-        plot_index = 0
-        for alg in algoritms:
-            index = np.arange(len(stats[alg]['unsolved'])) + 5
-            solved = [20 - i for i in stats[alg]['unsolved']]
-            ax[plot_index].set_title(alg.upper())
-            ax[plot_index].bar(index + x, solved,
-                    bottom=0,
-                    width=.5,
-                    label="solved")
-            ax[plot_index].bar(index + x, stats[alg]['unsolved'],
-                     bottom=solved,
-                     width=.5,
-                     label="unsolved")
-            ax[plot_index].legend()
-            plot_index +=1
-            x += .5
-        plt.xlabel('Number of agents')
-        plt.ylabel('Problems solved')
-        plt.tight_layout()
-        plt.show()
-    else:
-        json_file = open('benchmark/sample.json')
-        data = json.load(json_file)
-        fig,ax = plt.subplots()
-        ax.set_title('Success rate for CBS and CBS-disjoint')
-        plt.xlabel('Number of agents')
-        plt.ylabel('Success rate')
-        x = [i for i in range(5, 25)]
-        for alg in algoritms:
-            ax.plot(x, [data[str(i)][alg][0] for i in range(5, 25)], label=alg)
-        plt.legend()
-        plt.show()
+    json_file = open('benchmark/result_success.json')
+    data = json.load(json_file)
+    #plot_success_rate(data)
+    plot_time_area(data, 60*5)
+    #plot_expanded_nodes(data, 500)
+    plt.show()
