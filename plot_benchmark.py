@@ -3,8 +3,10 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+import argparse
 
 ALGORITMS = ['cbs', 'cbs_disjoint']
+THEME = 'darkgrid'
 
 def plot_time_area(data, time_limit):
     """
@@ -12,7 +14,7 @@ def plot_time_area(data, time_limit):
     """
     keys = list(data.keys())
     start,finish = int(keys[0]), int(keys[-1])+2
-    sns.set_theme(style="darkgrid")
+    sns.set_theme(style=THEME)
     x_axis = [i for i in range(start,finish,2)]
     y_axis = []
     for alg in ALGORITMS:
@@ -29,24 +31,38 @@ def plot_time_area(data, time_limit):
         std_of_mean.append([])
         for i in range(len(y_axis[alg])):
             std_of_mean[alg].append(np.std(y_axis[alg][i], ddof=1) / np.sqrt(np.size(y_axis[alg][i])))
+    cbs = np.array([np.mean(x) for x in y_axis[0]])
+    cbs_disjoint = np.array([np.mean(x) for x in y_axis[1]])
     data = pd.DataFrame(
         data={
             'agents': x_axis,
-            'cbs': [np.mean(x) for x in y_axis[0]],
-            'cbs_disjoint': [np.mean(x) for x in y_axis[1]]
+            'cbs': cbs,
+            'cbs_disjoint': cbs_disjoint
         }
     )
-    plt = sns.lineplot(data=data.set_index('agents'), palette="tab10", linewidth=2.5)
-    plt.set(xlabel='Agents', ylabel='CPU time (s)')
+    plt = sns.lineplot(data=data.set_index('agents'), linewidth=2.5)
+    plt.set(xlabel='Number of agents', ylabel='CPU time (s)')
     plt.axes.set_xticks(np.arange(start, finish, 2.0))
+    # CBS area
+    lower = cbs - std_of_mean[0]; upper = cbs + std_of_mean[0]
+    plt.plot(x_axis, lower, color='tab:blue', alpha=0.2)
+    plt.plot(x_axis, upper, color='tab:blue', alpha=0.2)
+    plt.fill_between(x_axis, lower, upper, color='tab:blue', alpha=0.2)
+    # CBS disjoint area
+    lower = cbs_disjoint - std_of_mean[1]; upper = cbs_disjoint + std_of_mean[1]
+    plt.plot(x_axis, lower, color='tab:orange', alpha=0.2)
+    plt.plot(x_axis, upper, color='tab:orange', alpha=0.2)
+    plt.fill_between(x_axis, lower, upper, color='tab:orange', alpha=0.2)
+    plt.set(title='CPU time with standard error of the mean')
 
-def plot_success_rate(data):
+def plot_success_rate(data, time_limit):
     """
     Plot the success rate of the benchmark.
     """
     keys = list(data.keys())
     start,finish = int(keys[0]), int(keys[-1])+1
-    sns.set_theme(style="darkgrid")
+    max_tests = len(data[str(start)]['cbs']['cpu_time'])
+    sns.set_theme(style=THEME)
     x_axis = [i for i in range(start,finish,2)]
     d = {}
     for alg in ALGORITMS:
@@ -64,9 +80,10 @@ def plot_success_rate(data):
             'cbs_disjoint': d['cbs_disjoint']
         }
     )
-    plt = sns.lineplot(data=data.set_index('agents'), palette="tab10", linewidth=2.5)
-    plt.set(xlabel='Agents', ylabel='Problems solved (target=25)')
+    plt = sns.lineplot(data=data.set_index('agents'), linewidth=2.5)
+    plt.set(xlabel='Number of agents', ylabel='Problems solved (target={})'.format(max_tests))
     plt.axes.set_xticks(np.arange(start, finish + 1, 2.0))
+    plt.set(title='Success rate with time limit of {} minutes'.format(time_limit))
 
 def plot_expanded_nodes(data, default_nodes= 1000):
     """
@@ -74,7 +91,7 @@ def plot_expanded_nodes(data, default_nodes= 1000):
     """
     keys = list(data.keys())
     start,finish = int(keys[0]), int(keys[-1])+2
-    sns.set_theme(style="darkgrid")
+    sns.set_theme(style=THEME)
     x_axis = [i for i in range(start,finish,2)]
     y_axis = []
     for alg in ALGORITMS:
@@ -91,15 +108,32 @@ def plot_expanded_nodes(data, default_nodes= 1000):
             'cbs_disjoint': y_axis[1]
         }
     )
-    plt = sns.lineplot(data=data.set_index('agents'), palette="tab10", linewidth=2.5)
-    plt.set(xlabel='Agents', ylabel='Expanded nodes')
+    plt = sns.lineplot(data=data.set_index('agents'), linewidth=2.5)
+    plt.set(xlabel='Number of agents', ylabel='Expanded nodes')
     plt.axes.set_xticks(np.arange(start, finish, 2.0))
+    plt.set(title='Mean of expanded nodes')
 
 
 if __name__ == "__main__":
-    json_file = open('benchmark/result_success.json')
-    data = json.load(json_file)
-    #plot_success_rate(data)
-    plot_time_area(data, 60*5)
-    #plot_expanded_nodes(data, 500)
-    plt.show()
+    parser = argparse.ArgumentParser(description='Runs various MAPF algorithms')
+    parser.add_argument('--plot', type=str,
+                        help='Select the plot to be generated, based on benchmark data {random, success}')
+    args=parser.parse_args()
+    if args.plot == 'random':
+        # plot based on many random instances
+        json_file = open('benchmark/result.json')
+        data = json.load(json_file)
+        plot_success_rate(data, 2)
+        plt.show()
+        plot_time_area(data, 60*2)
+        plt.show()
+        plot_expanded_nodes(data, 500)
+        plt.show()
+    if args.plot == 'success':
+        # plot based of one map with different instances
+        json_file = open('benchmark/result_success.json')
+        data = json.load(json_file)
+        plot_success_rate(data,5)
+        plt.show()
+        plot_time_area(data, 60*5)
+        plt.show()
