@@ -31,13 +31,13 @@ python run_experiments.py --benchmark random
 ```
 After the execution you can see the results in the following file:
 ```bash
-python plot_benchmark.py --benchmark random
+python plot_benchmark.py --plot random
 ```
 A possible output is the following:
 <p align="center">
-    <img style="zoom:67%" src="img/plot_1_1.png"/>
-    <img style="zoom:67%" src="img/plot_1_2.png"/>
-    <img style="zoom:67%" src="img/plot_1_3.png"/>
+    <img style="width:400px;height:400px" src="img/plot_1_1.png"/>
+    <img style="width:400px;height:400px" src="img/plot_1_2.png"/>
+    <img style="width:400px;height:400px" src="img/plot_1_3.png"/>
 </p>
 
 
@@ -54,6 +54,6 @@ When the benchmark is finished (it can take more the one hour) you can see the p
 python plot_benchmark.py --plot success
 ```
 <p align="center">
-    <img style="zoom:67%" src="img/plot_2_1.png"/>
-    <img style="zoom:67%" src="img/plot_2_2.png"/>
+    <img style="width:400px;height:400px" src="img/plot_2_1.png"/>
+    <img style="width:400px;height:400px" src="img/plot_2_2.png"/>
 </p>
