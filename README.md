@@ -4,7 +4,7 @@ The MAPF (Multi-Agent Path Finding) is the problem of computing a collision-free
 ```bash
 python run_experiments.py --disjoint --random --solver CBS
 ```
-<p style="align:center">
+<p align="center">
     <img style="width:400px" src="img/output.gif"/>
 </p>
 
