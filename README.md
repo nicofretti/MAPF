@@ -23,8 +23,8 @@ In my solution there are the following steps:
 - Solve the map with the MAPF solver (CBS and CBS+DS)
 - Increase the number of agents and repeat the process
 
-#### Benchmark random
-The benchmark is based on random maps generated at runtime with a number of agents that varies from 4 to 18 with a step of 4. For each number of agents the benchmark generate 25 maps and solve them with the MAPF solver.
+#### 1 - Benchmark random
+The benchmark is based on random maps generated at runtime with a number of agents that varies from 4 to 18 with a step of 2. For each number of agents the benchmark generate 25 maps and solve them with the MAPF solver. The time limit is set to 2 minutes and every cell of the map has the probability of 5% of being occupied.
 The benchmark is executed with the following command (it can take hours to finish):
 ```bash
 python run_experiments.py --benchmark random
@@ -40,7 +40,7 @@ A possible output is the following:
     <img style="width:400px" src="img/plot_1_3.png"/>
 </p>
 
-#### Benchmark success
+#### 2 - Benchmark success
 In this benchmark the map is a 20x20 matrix with obstacles distributed in the 5% of the map. The idea is to increase the number of agents (from 4 to 26 with step 2) and see if the algoritm can solve the problem in less than 5 minutes. For each number of agents the same map is used for 25 times, but the start and goal positions are randomly distributed (idea taken from this [paper](http://idm-lab.org/bib/abstracts/papers/icaps19a.pdf)).
 To run this benchmark you need to launch the following command:
 
