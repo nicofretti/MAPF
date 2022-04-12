@@ -55,3 +55,6 @@ python plot_benchmark.py --plot success
     <img style="width:400px" src="img/plot_2_1.png"/>
     <img style="width:400px" src="img/plot_2_2.png"/>
 </p>
+
+### Conclusion
+As plotted, the algorithm CBS-DS runs much faster than the CBS algorithm and the number of nodes expanded is smaller. So the benchmark verified that the CBS-DS algorithm seems to be more efficient than the CBS as written on the assignment "...CBS with disjoint splitting can be expected to run faster than CBS" ([handout.pdf](pdf/handout.pdf)).
