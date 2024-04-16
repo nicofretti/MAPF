@@ -1,5 +1,5 @@
 # Multi-Agent Path Finding (MAPF)
-The MAPF (Multi-Agent Path Finding) is the problem of computing collision-free paths for a team of agents from their current locations to a given destination. In this repo you can find the solution of the assignment given by [Sven Koenig](http://idm-lab.org/project-p/project.html) that is composed of 5 tasks. I used the repository of [jzagoli](https://github.com/jzagoli) that has already implemented the tasks 1 to 3 included. Try the solution executing the following command (after installing requirements.txt):
+The MAPF (Multi-Agent Path Finding) is the problem of computing collision-free paths for a team of agents from their current locations to a given destination. In this repo you can find the solution of the assignment given by [Sven Koenig](http://idm-lab.org/project-p/project.html) that is composed of 5 tasks. I used the repository of [jzagoli](https://github.com/zagoli/MultiAgentPathFinding) that has already implemented the tasks 1 to 3 included. Try the solution executing the following command (after installing requirements.txt):
 
 ```bash
 python run_experiments.py --disjoint --random --solver CBS
